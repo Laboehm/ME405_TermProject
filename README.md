@@ -220,4 +220,6 @@ These components were chosen to match the specific challenges provided by the tr
 [Additional STM32 Datasheet](https://www.st.com/resource/en/user_manual/um1724-stm32-nucleo64-boards-mb1136-stmicroelectronics.pdf)\
 [BNO055 Pinout](https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor/pinouts)\
 [BNO055 DataSheet](https://cdn-shop.adafruit.com/datasheets/BST_BNO055_DS000_12.pdf)\
-[Bumper Datasheet](https://www.pololu.com/product/3674)
+[Bumper Datasheet](https://www.pololu.com/product/3674)\
+[ME 405 Support Library Documentation](https://spluttflob.github.io/ME405-Support/annotated.html)\
+[ME 405 Support Library](https://github.com/spluttflob/ME405-Support)
