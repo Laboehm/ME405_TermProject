@@ -16,7 +16,7 @@ Files:
 - [`encoder.py`](./code/encoder.py)
 - [`line_sensor.py`](./code/line_sensor.py)
 - [`motor.py`](./code/motor.py)
-- [`imu.py`](./code/imu.py)
+- [`IMU.py`](./code/IMU.py)
 - [`tasks.py`](./code/tasks.py)
 
 ###  Main file
