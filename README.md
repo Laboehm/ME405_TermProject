@@ -268,7 +268,7 @@ To complete the system model, we generated several plots to physically character
 - **Steady-state speed vs. % duty cycle**  
   Shows the linear relationship between PWM input and angular velocity, confirming the system gain.  
 
-  ![Steady-state speed vs. % duty cycle](figures/stead_state_vs_dity_cycle.png)
+  ![Steady-state speed vs. % duty cycle](figures/stead_state_vs_duty_cycle.png)
 
 - **Position vs. time for a step input**  
   Illustrates how Romi’s position evolves over time when subjected to a step change in input.  
