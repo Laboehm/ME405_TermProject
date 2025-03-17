@@ -240,11 +240,42 @@ The electrical system is designed for reliable performance for our autonomous na
 
 ## Analysis
 
+Our work with Romi involved both theoretical modeling and experimental validation. We developed kinematic equations to describe Romi’s motion, performed system identification tests to determine key parameters, and implemented a numerical simulation to predict its behavior. This analysis provided a solid foundation for understanding and controlling Romi’s movement.
 
 ### Calculations
 
+We derived kinematic equations that describe Romi’s motion in a nonlinear state-space form. These equations define the global \( x \), \( y \), and \( \psi \) (orientation) coordinates of the robot, along with arc length, velocity, and angular velocity. 
+
+To determine the system’s physical parameters, we performed a step response test at different PWM duty cycles. By measuring the steady-state angular velocity at various inputs, we determined the following key parameters:
+
+- **System gain:** 0.29 rad/s per % duty cycle  
+- **Motor time constant:** 70 ms  
+
+The time constant was determined by analyzing the transient response of the system. These experimentally derived parameters were essential for building an accurate model of Romi’s motion.
+
+### System Model
+
+We implemented a numerical model using an RK4 (Runge-Kutta 4th-order) solver in Jupyter. This solver integrated the nonlinear kinematic equations over discrete time steps, allowing us to simulate Romi’s behavior under different inputs.
+
+The simulation also included a **feedback controller** that adjusted for a reference forward velocity and angular momentum. This allowed us to predict how Romi would respond to various control inputs and refine our understanding of its motion.
 
 ### Plots
+
+To validate the system model and measured parameters, we generated several key plots:
+
+- **Steady-state speed vs. % duty cycle**  
+  Shows the linear relationship between PWM input and angular velocity, confirming the system gain.
+
+- **Position vs. time for a step input**  
+  Illustrates how Romi’s position evolves over time when subjected to a step change in input.
+
+- **Velocity vs. time for a step input**  
+  Captures the transient response of the system and was used to verify the time constant.
+
+- **Linearized motor response (logarithmic plot)**  
+  By plotting **log(1 - \( \omega / \omega_{max} \))** against time, we extracted the motor time constant from the slope of the response.
+
+These calculations, models, and plots provided a detailed understanding of Romi’s kinematics and control behavior, ensuring that our approach was both accurate and effective.
 
 
 ### Demonstration
