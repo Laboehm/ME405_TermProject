@@ -18,7 +18,7 @@ In the following sections, the design, analysis, and results of a programmed Rom
 
 ### Problem statement
 The primary task is to complete the following track in figure 1 using the Romi bot, with the highest speed and reliability possible. Approach for this task is fully up to the interpretation of the team, with the only requirement being the checkpoints. The bot is able to disregard the lines entirely, but for a systematic approach the lines will be needed in order to hit preceding checkpoints. Based on the structure of the track, it is inevitable that there will be hardcoded portions which will cause the program to be a mix of algorithmic and hard coded.\
-![Track](https://github.com/[Laboehm]/[ME405_TermProject]/blob/[figures]/Track.jpg?raw=true)\
+![Track](figures/Track.jpg)\
 Figure 1: Romi bot track
 
 ## Design
