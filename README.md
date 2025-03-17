@@ -244,20 +244,20 @@ Our work with Romi involved both theoretical modeling and experimental validatio
 
 ### Calculations
 
-We derived kinematic equations that describe Romi’s motion in a nonlinear state-space form. These equations define the global \( x \), \( y \), and \( \psi \) (orientation) coordinates of the robot, along with arc length, velocity, and angular velocity. 
+We derived kinematic equations that describe Romi’s motion in a nonlinear state-space form. These equations define the global \( x \), \( y \), and &psi (orientation) coordinates of the robot, along with arc length, velocity, and angular velocity. 
 
 To determine the system’s physical parameters, we performed a step response test at different PWM duty cycles. By measuring the steady-state angular velocity at various inputs, we determined the following key parameters:
 
 - **System gain:** 0.29 rad/s per % duty cycle  
 - **Motor time constant:** 70 ms  
 
-The time constant was determined by analyzing the transient response of the system. These experimentally derived parameters were essential for building an accurate model of Romi’s motion.
+The time constant was determined by analyzing the transient response of the system. The purpose of these experimentally derived parameters was for building an accurate model of Romi’s motion.
 
 ### System Model
 
 We implemented a numerical model using an RK4 (Runge-Kutta 4th-order) solver in Jupyter. This solver integrated the nonlinear kinematic equations over discrete time steps, allowing us to simulate Romi’s behavior under different inputs.
 
-The simulation also included a **feedback controller** that adjusted for a reference forward velocity and angular momentum. This allowed us to predict how Romi would respond to various control inputs and refine our understanding of its motion.
+The simulation also included a feedback controller that adjusted for a reference forward velocity and angular momentum. This allowed us to predict how Romi would respond to various control inputs and refine our understanding of its motion.
 
 ### Plots
 
