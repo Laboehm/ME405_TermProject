@@ -273,7 +273,42 @@ L_v_ref = task_share.Share('f', name="Left reference velocity")
 mode = task_share.Share('I', name="Drive mode")
 mode.put(2)
 ```
+#### Task Initialization
+Multiple tasks are instantiated and added to `cotask.task_list()`, including motor control, decision-making, trajectory correction, and sensor data collection.
 
+```python
+actuate_motor_task = cotask.Task(Task_Actuate_Motors(R_v_ref, L_v_ref).run, ...)
+mastermind_task = cotask.Task(MasterMind(R_v_ref, L_v_ref, mode, sensor).run, ...)
+drive_straight_task = cotask.Task(Task_Drive_Straight(R_v_ref, L_v_ref, mode, 3).run, ...)
+follow_line_task = cotask.Task(Task_Follow_Line(R_v_ref, L_v_ref, mode, sensor, 3).run, ...)
+imu_task = cotask.Task(Task_IMU().run, ...)
+```
+
+#### Motor Control
+Our robot had a problem where if the motors are not dealt with in code, they would run indefinitely. So, we were careful to deal with the motors in main during initialization and exit.
+The motors are initially disabled before execution begins.
+
+```python
+actuate_motor_obj.rightMotor.disable()
+actuate_motor_obj.leftMotor.disable()
+```
+
+Once all tasks are initialized, the motors are enabled.
+
+```python
+actuate_motor_obj.rightMotor.enable()
+actuate_motor_obj.leftMotor.enable()
+```
+
+#### Exception Handling
+A `try-except` block ensures that the motors are disabled upon exit.
+
+```python
+except KeyboardInterrupt:
+    actuate_motor_obj.rightMotor.disable()
+    actuate_motor_obj.leftMotor.disable()
+    print("Exiting")
+```
 
 ## Analysis
 
