@@ -310,6 +310,85 @@ except KeyboardInterrupt:
     print("Exiting")
 ```
 
+### tasks.py
+
+The `tasks.py` file defines multiple task classes that control Romi’s behavior, including motor actuation, trajectory correction, line following, and IMU data collection.
+
+#### MasterMind
+
+The `MasterMind` class handles high-level decision-making by switching between driving modes based on line sensor data.
+
+```python
+class MasterMind:
+    def __init__(self, R_v_ref, L_v_ref, mode, sensor):
+        self.sensor = sensor
+        self.R_v_ref = R_v_ref
+        self.L_v_ref = L_v_ref
+        self.mode = mode
+        self.state = 0
+```
+
+```python
+if self.sensor.line_detected(threshold=1):
+    self.mode.put(2)  # Follow line
+else:
+    self.mode.put(1)  # Drive straight
+```
+
+#### Task_Actuate_Motors
+The `Task_Actuate_Motors` class continuously adjusts the motor speeds to match reference velocities using PID control.
+
+```python
+class Task_Actuate_Motors:
+    def __init__(self, R_v_ref, L_v_ref):
+        self.rightMotor = Motor(Timer(1, freq=1000), 3, Pin.board.PA10, Pin.board.PB8, Pin.board.PB2)
+        self.leftMotor = Motor(Timer(2, freq=1000), 1, Pin.board.PA15, Pin.board.PH0, Pin.board.PH1)
+        self.rightController = Controller(auto_gains=False, Kp=2, Ki=2)
+        self.leftController = Controller(auto_gains=False, Kp=4, Ki=4)
+```
+```python
+rightErr = self.R_v_ref.get() - self.rightVel
+leftErr = self.L_v_ref.get() - self.leftVel
+rightActuation = self.rightController.Control(rightErr)
+leftActuation = self.leftController.Control(leftErr)
+self.rightMotor.set_effort(rightActuation, max_effort=25)
+self.leftMotor.set_effort(leftActuation, max_effort=25)
+```
+
+#### Task_Drive_Straight
+The `Task_Drive_Straight` class ensures the robot maintains a straight trajectory by correcting positional errors.
+
+```python
+class Task_Follow_Line:
+    def __init__(self, R_v_ref, L_v_ref, mode, sensor, target_speed=1):
+        self.sensor = sensor
+        self.R_v_ref = R_v_ref
+        self.L_v_ref = L_v_ref
+        self.mode = mode
+        self.lineController = Controller(auto_gains=False, Kp=1.25, Ki=.2, Kd=0)
+```
+
+```python
+error = self.target_centroid - self.centroid
+actuation = self.lineController.Control(error)
+self.R_v_ref.put(self.target_speed + actuation)
+self.L_v_ref.put(self.target_speed - actuation)
+```
+
+#### Task_IMU
+The Task_IMU class was intended to read heading data from the BNO055 IMU sensor. However, we ran out of time before fully implementing it.
+
+```python
+class Task_IMU:
+    def __init__(self):
+        print("Initializing IMU...")
+        self.imu = BNO055.initialize_imu()
+```
+```python
+heading, _, _ = self.imu.read_euler_angles()
+print(f"Heading: {heading:.2f}°")
+```
+
 ## Analysis
 
 Our work with Romi involved both theoretical modeling and experimental validation. We developed kinematic equations to describe Romi’s motion, performed system identification tests to determine key parameters, and implemented a numerical simulation to predict its behavior. This analysis provided a solid foundation for understanding and controlling Romi’s movement.
