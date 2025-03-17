@@ -244,7 +244,7 @@ Our work with Romi involved both theoretical modeling and experimental validatio
 
 ### Calculations
 
-We derived kinematic equations that describe Romi’s motion in a nonlinear state-space form. These equations define the global \( x \), \( y \), and $'psi'$ (orientation) coordinates of the robot, along with arc length, velocity, and angular velocity. 
+We derived kinematic equations that describe Romi’s motion in a nonlinear state-space form. These equations define the global X, Y, and Ψ (orientation) coordinates of the robot, along with arc length, velocity, and angular velocity. 
 
 To determine the system’s physical parameters, we performed a step response test at different PWM duty cycles. By measuring the steady-state angular velocity at various inputs, we determined the following key parameters:
 
@@ -257,11 +257,11 @@ The time constant was determined by analyzing the transient response of the syst
 
 We implemented a numerical model using an RK4 (Runge-Kutta 4th-order) solver in Jupyter. This solver integrated the nonlinear kinematic equations over discrete time steps, allowing us to simulate Romi’s behavior under different inputs.
 
-The simulation also included a feedback controller that adjusted for a reference forward velocity and angular momentum. This allowed us to predict how Romi would respond to various control inputs and refine our understanding of its motion.
+The simulation also included a feedback controller that adjusted for a reference forward velocity and angular momentum. This allowed us to predict how Romi would respond to various control inputs and improve our understanding of its motion.
 
 ### Plots
 
-To validate the system model and measured parameters, we generated several key plots:
+To complete the system model, we generated several plots to physically characterize the robot:
 
 - **Steady-state speed vs. % duty cycle**  
   Shows the linear relationship between PWM input and angular velocity, confirming the system gain.
