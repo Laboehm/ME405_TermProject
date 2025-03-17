@@ -244,7 +244,7 @@ Our work with Romi involved both theoretical modeling and experimental validatio
 
 ### Calculations
 
-We derived kinematic equations that describe Romi’s motion in a nonlinear state-space form. These equations define the global X, Y, and $\psi$ (orientation) coordinates of the robot, along with arc length, velocity, and angular velocity. 
+We derived kinematic equations that describe Romi’s motion in a nonlinear state-space form. These equations define the global $X$, $Y$, and $\psi$ (orientation) coordinates of the robot, along with arc length ($s$), velocity ($v$), and angular velocity ($\Omega$). 
 
 [View Hand Calculations](figures/hand_calcs.pdf)
 
