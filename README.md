@@ -376,7 +376,7 @@ self.L_v_ref.put(self.target_speed - actuation)
 ```
 
 #### Task_IMU
-The Task_IMU class was intended to read heading data from the BNO055 IMU sensor. However, we ran out of time before fully implementing it.
+The `Task_IMU` class was intended to read heading data from the BNO055 IMU sensor. However, we ran out of time before fully implementing it.
 
 ```python
 class Task_IMU:
