@@ -2,7 +2,7 @@
 This repository contains the code and report for the ME405 course term project at Cal Poly. \
 The documentation follows below under the Report section. 
 
-## Code
+## [Code](./code/)
 
 ###  Driver Files
 
@@ -22,7 +22,7 @@ The `main.py` file serves as the central execution script for the development bo
 
 ---
 
-## Figures
+## [Figures](./figures/)
 
 Repository of any figure images, plots or additional calculations that did not fit into the report poriton of this markdown. 
 
