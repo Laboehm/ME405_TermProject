@@ -268,6 +268,8 @@ The electrical system is designed for reliable performance for our autonomous na
 | `controller.py` | Establishes PID based controller logic for use in other modules. |
 | `line_sensor.py` | Completes line sensor assignment/calibration, acquires centroid, and provides line detection feedback. |
 
+Hand-written design of the code can be found [Here](figures/design_documentation.pdf)
+
 ### main.py
 
 The `main.py` file initializes Romi’s control system, sets up shared variables, and manages the cooperative multitasking framework.
