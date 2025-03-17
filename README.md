@@ -2,6 +2,8 @@
 This repository contains the code and report for the ME405 course term project at Cal Poly. \
 The documentation follows below under the Report section. 
 
+![Romi](figures/Romi.heic)
+
 ## [Code](./code/)
 
 ###  Driver Files
