@@ -18,7 +18,7 @@ In the following sections, the design, analysis, and results of a programmed Rom
 
 ### Problem statement
 The primary task is to complete the following track in figure 1 using the Romi bot, with the highest speed and reliability possible. Approach for this task is fully up to the interpretation of the team, with the only requirement being the checkpoints. The bot is able to disregard the lines entirely, but for a systematic approach the lines will be needed in order to hit preceding checkpoints. Based on the structure of the track, it is inevitable that there will be hardcoded portions which will cause the program to be a mix of algorithmic and hard coded.\
-![alt text](https://github.com/[Laboehm]/[ME405_TermProject]/blob/[Figures]/Track.jpg?raw=true)\
+![Track](https://github.com/[Laboehm]/[ME405_TermProject]/blob/[figures]/Track.jpg?raw=true)\
 Figure 1: Romi bot track
 
 ## Design
@@ -119,13 +119,19 @@ These components were chosen to match the specific challenges provided by the tr
 
 ### Electrical design
 
+The electrical system of this project was carefully constructed to integrate all of the system components while managing the pins. There are a finite number of pins, especially for certain types of function such as the analog pins which are required for all of the components to coexist. Without proper electrical pin management, we would have to exclude certain functions and the program all together may not work. For pin assignments, the respective datasheets were referenced for proper function assignments for the development board and specific components. The system is built around the STM32 Nucleo-L476RG pin headers, which serve as the central interface for programming the entirety of the system. Each component is assigned to specific pins that exactly match their function, so as not to result in any unexpected bugs or trouble in interfacing the code with the components. Additionally there will be a provided list of banned pins that overlap with other functions, which would cause critical errors if used 
 
+---
 
 #### Power Connections
 | Cable Color | Nucleo Pin | Nucleo Pin Type | Romi PDB Pin | Component | Signal |
 |------------|-----------|----------------|-------------|----------|--------|
 | Red        | Vin       | Vin            | VSW         | Nucleo Board | ≈7.2V |
 | Black      | GND       | GND            | GND         | Nucleo Board | Ground |
+
+The provided  Motor Driver and Power Distribution Board (PDB) of the Romi Chassis sources the power for the system, so to power the Nucleo board we need to connect it to the PDB. The necessary 7.2V is sourced from the PDB, and delivered to the development board to power both the board itself and any peripherals powered by it. The Nucleo board receives power via the Vin pin from the PDB’s VSW pin, as noted in the table. This is a foundational part of the electrical composition, because this is how power is distributed to all of the other peripherals. 
+
+---
 
 #### Encoder Connections
 | Cable Color | Nucleo Pin | Nucleo Pin Type | Romi PDB Pin | Component | Signal |
@@ -135,24 +141,36 @@ These components were chosen to match the specific challenges provided by the tr
 | Blue       | PB4       | Timer Channel 1 | ELA/ERA     | Left Encoder | Encoder Ch. A |
 | Yellow     | PB5       | Timer Channel 2 | ELB/ERB     | Left Encoder | Encoder Ch. B |
 
+The Romi Chassis has two DC motors, therefore it has two encoders for precise independent speed and position feedback. Each of these encoders provides 1440 counts per revolution, which gives it considerably high resolution for any tasks we will need it to do. These encoders are individually set to channel 1 and 2 of the same timer on respective timers. Putting each encoder on a different timer, but with the same channels for both pins of the respective encoders, allows for the encoders to accurately make the readings for each wheel. If the two pins of each encoder were across different timers, it could result in inaccurate readings or total failure. It is essential for the readings to be accurate, otherwise the encoder data will be completely unreliable and more or less useless. 
+
+---
+
 #### Motor Connections
 | Cable Color | Nucleo Pin | Nucleo Pin Type | Romi PDB Pin | Component | Signal |
 |------------|-----------|----------------|-------------|----------|--------|
 | Green      | PA10      | Any Dig Out    | PWM         | Right Motor | Motor Effort |
 | Blue       | PB8       | Any Dig Out    | DIR         | Right Motor | Motor Direction |
 | Orange     | PB2       | Any Timer      | SLP         | Right Motor | Motor Enable |
-| Green      | PA15      | Left PWM       | PWM         | Left Motor | Motor Effort |
-| Blue       | PH0       | Left DIR       | DIR         | Left Motor | Motor Direction |
-| Yellow     | PH1       | Left SLP       | SLP         | Left Motor | Motor Enable |
+| Green      | PA15      | Any Dig Out       | PWM         | Left Motor | Motor Effort |
+| Blue       | PH0       | Any Dig Out       | DIR         | Left Motor | Motor Direction |
+| Yellow     | PH1       | Any Timer       | SLP         | Left Motor | Motor Enable |
+
+The motors are controlled through PWM (Pulse Width Modulation) signals, and the direction is determined by digital outputs from the Nucleo GPIO pins. The PDB manages the power, direction,  and PWM of these DC motors, so the motors are first connected to the PDB then the Nucleo board. From the pin assignment above, the primary functions to assign are the PWM, DIR and SLP for comprehensive motor control. To change the effort or speed of the motors, the PWM which is the duration of power in a cycle increases the speed by increasing the amount of voltage provided over a given cycle. The motor SLP, can both function as an enable and disable when used in an inverse logic.
+
+---
 
 #### BNO055 (IMU) Connections
 | Cable Color | Nucleo Pin | Nucleo Pin Type | Romi PDB Pin | Component | Signal |
 |------------|-----------|----------------|-------------|----------|--------|
-| Red        | -         | -              | -           | BNO055 (IMU) | ≈3.3-5V (Vin) |
-| Black      | GND       | GND            | -           | BNO055 (IMU) | Ground (GND) |
-| Yellow     | PB14      | Timer          | -           | BNO055 (IMU) | Serial Data Pin (SDA) |
-| Green      | PB3       | Timer          | -           | BNO055 (IMU) | Serial Clock Pin (SCL) |
-| Blue       | PB13      | -              | -           | BNO055 (IMU) | Reset (RST) |
+| Red        | -         | -              | Vin           | BNO055 (IMU) | ≈3.3-5V (Vin) |
+| Black      | GND       | GND            | GND           | BNO055 (IMU) | Ground (GND) |
+| Yellow     | PB14      | Timer          | I2C           | BNO055 (IMU) | Serial Data Pin (SDA) |
+| Green      | PB3       | Timer          | I2C           | BNO055 (IMU) | Serial Clock Pin (SCL) |
+| Blue       | PB13      | -              | GPIO           | BNO055 (IMU) | Reset (RST) |
+
+To enable accurate heading adjustments and data, the BNO055 IMU is integrated with the I2C interface. The IMU provides real-time orientation data, so it is crucial that it is connected correctly to respective I2C SDA and SCL pins for accurate readings. SDA in specific is responsible for data transmission, while the SCL line is necessary for synchronizing the data transmissions with clock pulses for maximum accuracy. The reset pin allows software-based reinitialization of the sensor if needed and the other pins are for simple power functions. 
+
+---
 
 #### Line Sensor Connections
 | Cable Color | Nucleo Pin | Nucleo Pin Type | Romi PDB Pin | Component | Signal |
@@ -169,13 +187,21 @@ These components were chosen to match the specific challenges provided by the tr
 | Purple     | PC1       | Analog         | -           | Line sensor | 6 |
 | Gray       | PC0       | Analog         | -           | Line sensor | 7 |
 
+A IR Reflectance Sensor Array with seven sensors is used for line detection in our application. These sensors detect changes in reflectance between the track's black line and the surrounding surface. The sensors are individually able to detect changes by shining a light and receiving the value reflected back from the lit surface. Line sensor values are higher max out for the color black and hit close to zero at white. With the functionality in mind, it makes sense then that we use individual analog pins for each of the sensors and their variable data that they receive from the refractance. The current control pins manage the even and odd emitters, allowing for calibration and optimized sensing.
+
+---
+
 #### Bluetooth Connections
 | Cable Color | Nucleo Pin | Nucleo Pin Type | Romi PDB Pin | Component | Signal |
 |------------|-----------|----------------|-------------|----------|--------|
-| Green      | PC4       | Tx (Nucleo)    | -           | Bluetooth | Rx |
-| Yellow     | PC5       | Rx (Nucleo)    | -           | Bluetooth | Tx |
+| Green      | PC4       | Tx    | -           | Bluetooth | Rx |
+| Yellow     | PC5       | Rx     | -           | Bluetooth | Tx |
 | Blue       | PC8       | GPIO           | -           | Bluetooth | State |
 | Brown      | PC6       | GPIO           | -           | Bluetooth | Enable |
+
+The HC-05 Bluetooth module was planned to be integrated for the convenience of remote debugging and wireless command input, although we were unable to get it functioning after much effort. We decided at some point, it was more effort than it was worth so we ultimately abandoned it. But, the theoretical application here is having it attached to a Tx and Rx pin to transmit and receive Bluetooth signals. Additionally, the two GPIO pins were meant to control which state it was in for connection and enable it to start using the module. 
+
+---
 
 #### Bumper Connections
 | Cable Color | Nucleo Pin | Nucleo Pin Type | Romi PDB Pin | Component | Signal |
@@ -185,6 +211,19 @@ These components were chosen to match the specific challenges provided by the tr
 | Green      | PC7       | GPIO           | -           | Left Bumper | GPIO |
 | Orange     | GND       | GND            | -           | Left Bumper | Ground |
 
+There are respective bump sensors for the front right and left, with exactly three bumpers on each side. Each of these bumpers had associated signal pins for the individual pins but we shorted them on both sides since we don’t care specifically which of the three bumpers is pressed. A short for these bumpers, allows us to save on GPIO pins while still being able to detect whether a collision had occurred or not. The only obstacle is a flat wall which the robot should hit straight on, so we only need to detect when it hits the wall. 
+
+--- 
+
+#### Banned Pins
+These pins are reserved or unavailable for general use due to conflicts with other system functionalities.
+
+| PA2  | PA3  | PA5  | PA11 | PA12 | PA13 | PA14 | PC13 | PC14 | PC15 |
+|------|------|------|------|------|------|------|------|------|------|
+
+--- 
+
+The electrical system is designed for reliable performance for our autonomous navigation system, by incorporating all of the necessary components while utilizing the minimum number of pins. By strategically assigning GPIO, timer, I2C, ADC, and UART pins, the system ensures correct functionality and maximum output for minimum power consumption. 
 
 ### Code design
 | File | High Level Description |
@@ -209,7 +248,7 @@ These components were chosen to match the specific challenges provided by the tr
 
 
 ### Demonstration
-
+Video Link:
 
 ## Results
 
