@@ -9,16 +9,23 @@ The documentation follows below under the Report section.
 This section contains the essential **driver files** required for controlling the various hardware components of the robot. These files handle **low-level hardware interactions**, including sensor readings, motor control, and communication.
 
 Files:
-- `motor.py`
-- `encoder.py`
-- `imu.py`
-- `line_sensor.py`
-- `bump.py`
-- `bluetooth.py`
+- [`bluetooth.py`](./code/bluetooth.py)
+- [`bno055.py`](./code/bno055.py)
+- [`bump.py`](./code/bump.py)
+- [`controller.py`](./code/controller.py)
+- [`encoder.py`](./code/encoder.py)
+- [`line_sensor.py`](./code/line_sensor.py)
+- [`motor.py`](./code/motor.py)
+- [`imu.py`](./code/imu.py)
+- [`tasks.py`](./code/tasks.py)
 
 ###  Main file
 
-The `main.py` file serves as the central execution script for the development board that coordinates the driver tasks into a cohesive executable. It initializes tasks, runs the scheduler, and manages high-level decision-making for the Romi robot execution.
+The [`main.py`](./code/main.py) file serves as the central execution script for the development board that coordinates the driver tasks into a cohesive executable. It initializes tasks, runs the scheduler, and manages high-level decision-making for the Romi robot execution.
+
+###
+
+The firmware for the micropython interpreter is provided in the file [`firmware.bin`](./code/firmware.bin). 
 
 ---
 
