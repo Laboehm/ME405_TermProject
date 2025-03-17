@@ -2,8 +2,6 @@
 This repository contains the code and report for the ME405 course term project at Cal Poly. \
 The documentation follows below under the Report section. 
 
-![Romi](figures/Romi.heic)
-
 ## [Code](./code/)
 
 ###  Driver Files
@@ -53,6 +51,8 @@ The Pololu Romi Chassis is a lightweight and versatile robotic platform. It prov
 - Expandable design, allows for additional components to be directly mounted.
 
 This chassis serves as the foundation for the entirety of the mechanical system.
+
+![Picture of Romi](figures/Romi.heic)
 
 ---
 
