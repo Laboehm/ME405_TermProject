@@ -23,7 +23,7 @@ Files:
 
 The [`main.py`](./code/main.py) file serves as the central execution script for the development board that coordinates the driver tasks into a cohesive executable. It initializes tasks, runs the scheduler, and manages high-level decision-making for the Romi robot execution.
 
-###
+### Firmware
 
 The firmware for the micropython interpreter is provided in the file [`firmware.bin`](./code/firmware.bin). 
 
