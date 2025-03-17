@@ -246,7 +246,7 @@ These pins are reserved or unavailable for general use due to conflicts with oth
 
 The electrical system is designed for reliable performance for our autonomous navigation system, by incorporating all of the necessary components while utilizing the minimum number of pins. By strategically assigning GPIO, timer, I2C, ADC, and UART pins, the system ensures correct functionality and maximum output for minimum power consumption. 
 
-### Code design
+## Code design
 | File | High Level Description |
 |------|------------|
 | `main.py` | Initializes tasks and coordinates state transitions with cotask scheduler logic. |
@@ -258,6 +258,22 @@ The electrical system is designed for reliable performance for our autonomous na
 | `bluetooth.py` | Manages communication with HC-05 bluetooth module. |
 | `controller.py` | Establishes PID based controller logic for use in other modules. |
 | `line_sensor.py` | Completes line sensor assignment/calibration, acquires centroid, and provides line detection feedback. |
+
+### main.py
+
+The `main.py` file initializes Romi’s control system, sets up shared variables, and manages the cooperative multitasking framework.
+
+#### Shared Variables
+
+Shared variables are created using `task_share.Share()`, allowing tasks to communicate.
+
+```python
+R_v_ref = task_share.Share('f', name="Right reference velocity")
+L_v_ref = task_share.Share('f', name="Left reference velocity")
+mode = task_share.Share('I', name="Drive mode")
+mode.put(2)
+```
+
 
 ## Analysis
 
