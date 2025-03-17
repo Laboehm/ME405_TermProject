@@ -275,7 +275,7 @@ To complete the system model, we generated several plots to physically character
   Captures the transient response of the system and was used to verify the time constant.
 
 - **Linearized motor response (logarithmic plot)**  
-  By plotting '$log(1 - \( \omega / \omega_{max} \))'$ against time, we extracted the motor time constant from the slope of the response.
+  By plotting $'log(1 - \( \omega / \omega_{max} \))'$ against time, we extracted the motor time constant from the slope of the response.
 
 These calculations, models, and plots provided a detailed understanding of Romi’s kinematics and control behavior, ensuring that our approach was both accurate and effective.
 
