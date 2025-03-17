@@ -580,7 +580,7 @@ These calculations, models, and plots provided a detailed understanding of Romiâ
 
 
 ### Demonstration
-Video Link:
+[Watch the video](figures/Romi_video.MOV)
 
 ## Results
 
