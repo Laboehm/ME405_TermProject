@@ -389,6 +389,146 @@ heading, _, _ = self.imu.read_euler_angles()
 print(f"Heading: {heading:.2f}°")
 ```
 
+### Hardware Drivers
+
+The hardware drivers manage Romi’s motors, encoders, line sensor, and IMU. These modules provide low-level control and sensor data acquisition.
+
+#### Motor Driver (`motor.py`)
+
+The `Motor` class controls Romi’s motors using PWM signals and direction pins.
+
+```python
+class Motor:
+    def __init__(self, PWMtimer, PWM_channel, PWM, DIR, nSLP):
+        self.nSLP_pin = Pin(nSLP, mode=Pin.OUT_PP, value=0)
+        self.PWM_pin = PWMtimer.channel(PWM_channel, Timer.PWM, pin=PWM)
+        self.DIR_pin = Pin(DIR, mode=Pin.OUT_PP, value=0)
+```
+The motor can be enabled or disabled, and effort is applied via PWM.
+```python
+def set_effort(self, effort, max_effort=100):
+    max_effort = min(100, max_effort)
+    effort = max(-max_effort, min(max_effort, effort))
+
+    if effort >= 0:
+        self.DIR_pin.value(0)
+    else:
+        self.DIR_pin.value(1)
+
+    self.PWM_pin.pulse_width_percent(abs(effort))
+```
+#### Line Sensor (`line_sensor.py`)
+The `LineSensor` class interfaces with Romi’s 7-sensor array to detect and track lines.
+
+The sensor uses a calibration procedure to normalize its readings.
+```python
+def calibrate(self):
+    print("Place a white surface under the sensor array.")
+    input("Press Enter when ready for white calibration...")
+    self.white_calibration = self.read_sensors()
+
+    print("Now place a black surface under the sensor array.")
+    input("Press Enter when ready for black calibration...")
+    self.black_calibration = self.read_sensors()
+```
+
+A centroid value is computed from sensor readings to determine the line’s position.
+```python
+def get_centroid(self):
+    readings = self.read_sensors()
+    total_weighted = sum(readings[i] * (i + 1) for i in range(7))
+    total = sum(readings.values())
+    return total_weighted / total if total else 0
+```
+
+A threshold-based method detects whether a line is present.
+```python
+def line_detected(self, threshold=1):
+    return sum(self.read_sensors().values()) > threshold
+```
+
+#### Encoder Driver (`encoder.py`)
+The `Encoder` class reads position and velocity data from Romi’s motors.
+
+```python
+class Encoder:
+    def __init__(self, tim, chA_pin, chB_pin):
+        self.tim_pin = tim
+        self.chA_pin = self.tim_pin.channel(1, pin=chA_pin, mode=Timer.ENC_AB)
+        self.chB_pin = self.tim_pin.channel(2, pin=chB_pin, mode=Timer.ENC_AB)
+```
+Velocity and position updates are calculated in `update()`.
+```python
+def update(self):
+    self.current_count = self.tim_pin.counter()
+    self.delta = self.current_count - self.prev_count
+    self.dt = ticks_diff(self.curr_tick, self.prev_tick)
+
+    if self.delta >= (65535 + 1) / 2:
+        self.delta -= 65535 + 1
+    elif self.delta < -(65535 + 1) / 2:
+        self.delta += 65535 + 1
+
+    self.position += self.delta
+```
+
+PID Controller (`controller.py`)
+The `Controller` class provides PID-based actuation.
+
+```python
+class Controller:
+    def __init__(self, auto_gains=True, Kp=0.0, Ki=0.0, Kd=0.0):
+        self.Kp = Kp
+        self.Ki = Ki
+        self.Kd = Kd
+        self.integral = 0.0
+        self.last_val = 0.0
+        self.last_time = ticks_us()
+```
+
+The control signal is computed using the PID formula.
+
+```python
+def Control(self, error):
+    dt = ticks_diff(ticks_us(), self.last_time) / 1e6
+    self.last_time = ticks_us()
+    self.integral += error * dt
+    derivative = (error - self.last_val) / dt if dt > 0 else 0.0
+    control_signal = self.Kp * error + self.Ki * self.integral + self.Kd * derivative
+    self.last_val = error
+    return control_signal
+```
+
+    
+IMU (bno055.py)
+The BNO055 class interfaces with the IMU to retrieve heading and angular velocity.
+
+```python
+class BNO055:
+    BNO055_ADDR = 0x28
+    OPR_MODE_REG = 0x3D
+    CALIB_STAT_REG = 0x35
+```
+
+The IMU is initialized and set to NDOF mode.
+
+```python
+def initialize_imu():
+    i2c = pyb.I2C(2, pyb.I2C.CONTROLLER, baudrate=400000)
+    imu = BNO055(i2c, rst_pin=pyb.Pin("PA2", mode=pyb.Pin.OUT_PP))
+    return imu
+```
+
+
+Heading data is retrieved from the sensor.
+
+```python
+def read_euler_angles(self):
+    data = self.i2c.mem_read(6, self.BNO055_ADDR, self.EULER_H_LSB)
+    heading, roll, pitch = struct.unpack('<hhh', data)
+    return heading / 16.0, roll / 16.0, pitch / 16.0
+```
+
 ## Analysis
 
 Our work with Romi involved both theoretical modeling and experimental validation. We developed kinematic equations to describe Romi’s motion, performed system identification tests to determine key parameters, and implemented a numerical simulation to predict its behavior. This analysis provided a solid foundation for understanding and controlling Romi’s movement.
