@@ -540,6 +540,175 @@ def read_euler_angles(self):
     return heading / 16.0, roll / 16.0, pitch / 16.0
 ```
 
+---
+
+Considering we were not able to make our code fully function, the above code is only reflective of the minimum we were able to test and have functioning. Below will be some components that were supposed to have been added in functinoality, but either did not work or we were unable to test them due to technical issues. 
+
+---
+
+Additional shared variables that would have determined the determined the directoin of the 90 degree turn, distance to drive straight during the hard-coded portion, and the IMU decleration for the 90 degree turns as well. 
+
+```python
+    direction = task_share.Share('I', name="Turn mode")
+    direction.put(1)
+    distance = task_share.Share('I', name="Travel mode")
+    distance.put(100)
+    i2c = I2C(2, I2C.CONTROLLER, baudrate=400000)
+    imu = BNO055(i2c, rst_pin=Pin("PA2", mode=Pin.OUT_PP))
+```
+
+The intialization for the task that would have been used for the 90 degree turns
+
+```python
+    def __init__(self, R_v_ref, L_v_ref, mode, direction, imu):
+        self.imu = imu
+        self.rightMotorRef = R_v_ref  # Reference to right motor speed control
+        self.leftMotorRef = L_v_ref   # Reference to left motor speed control
+        self.turn_speed = 30          # Base effort value
+        self.direction = direction    # 1 for right, -1 for left
+        self.target_heading = None    # Will be set dynamically
+        self.tolerance = 3            # Acceptable error range in degrees
+        self.mode = mode
+```
+
+90 degree turn execution function, which functions by subtracting or adding 90 degrees to the current orientation based on whether the directoin is 1 (right turn) or -1 (left turn) using the IMU.
+
+```python
+    def run(self):
+        """
+        Executes a 90-degree turn.
+
+        Parameters:
+        - direction: 1 for right turn, -1 for left turn.
+        """
+        try:
+            if self.mode == 3:
+                # Get initial heading
+                current_heading, _, _ = self.imu.read_euler_angles()
+                self.target_heading = (current_heading + 90 * self.direction) % 360  # Ensure wrap-around
+
+                while True:
+                    # Read IMU heading
+                    heading, _, _ = self.imu.read_euler_angles()
+                    heading_error = (self.target_heading - heading + 540) % 360 - 180  # Keeps error within -180 to 180
+
+                    # Stop when within tolerance
+                    if abs(heading_error) <= self.tolerance:
+                        break
+
+                    # Adjust motor speeds dynamically
+                    right_effort = -self.turn_speed if self.direction == 1 else self.turn_speed
+                    left_effort = self.turn_speed if self.direction == 1 else -self.turn_speed
+
+                    self.rightMotorRef.put(right_effort)
+                    self.leftMotorRef.put(left_effort)
+
+                # Stop motors after the turn
+                self.rightMotorRef.put(0)
+                self.leftMotorRef.put(0)
+                print(f"Motors stopped after Turn.")
+
+        except Exception as e:
+            print(f"Error in Task_Turn_90 (Turn): {e}")
+            self.rightMotorRef.put(0)
+            self.leftMotorRef.put(0)
+            print(f"Motors stopped due to error during Turn.")
+            yield  # Ensure the function does not stop the task system unexpectedly
+```
+
+Task implementation of the 90 degree turn in the `main.py`
+
+```python
+    # Instantiate the turn 90 degrees task
+    turn_obj = Task_Turn_90(R_v_ref, L_v_ref, mode, direction, imu)
+    turn_task = cotask.Task(turn_obj.run,
+                                      name="Turn 90 Task",
+                                      priority=3,
+                                      period=10,
+                                      profile=True,
+                                      trace=True)
+    cotask.task_list.append(turn_task)
+```
+
+The intialization for the task that would have been used for the final task triggered by the bumper press.
+
+```python
+    def __init__(self, distance, direction, mode):
+            self.distance = distance # Adjust this for precise 90-degree turns
+            self.direction = direction
+            self.state = 0
+            self.mode = mode
+            def set_mode():
+                self.mode.put(4)
+            self.bump_sensor_L = BumpSensor('PC7', set_mode())
+            self.bump_sensor_R = BumpSensor('PA8', set_mode())
+```
+
+Final task execution function, that is triggered by a bumper being set to high. The hard coded sequence functions as an fsm that cycles through different modes to do a combination of moving forward and turning 90 degrees to get around the wall and back to the start. 
+
+```python
+    def run(self):      
+            try:  
+                if self.mode == 4:
+                    if self.state == 0: # State 0 right turn
+                        self.mode.put(3)
+                        self.distance = 200
+                        self.state = 1
+                        yield self.mode, self.direction
+                    elif self.state == 1: # State 1 move forward 200
+                        self.mode = 1
+                        self.state = 2
+                        yield self.mode, self.distance 
+                    elif self.state == 2: # State 2 turn left
+                        self.mode = 3
+                        self.state = 3
+                        self.direction = -1
+                        yield self.mode, self.direction
+                    elif self.state == 3: # State 3 move forward 100
+                        self.mode = 1
+                        self.state = 4
+                        self.distance = 100
+                        yield self.mode, self.distance 
+
+                    elif self.state == 4: # State 4 turn left
+                        self.mode = 3
+                        self.state = 5
+                        yield self.mode, self.direction
+
+                    elif self.state == 5: # State 5 move forward 200
+                        self.mode = 1
+                        self.state = 6
+                        self.distance = 200
+                        yield self.mode, self.distance 
+
+                    elif self.state == 6: # terminate the program
+                        self.rightMotor.disable()
+                        self.leftMotor.disable()
+                        sys.exit()
+
+                    else:
+                        raise ValueError('Invalid state')
+
+            except Exception as e:
+                print(f"Error: {e}")
+                self.rightMotor.set_effort(0)
+                self.leftMotor.set_effort(0)
+```
+
+Task implementation of the final task triggered by the bumper in the `main.py`
+
+```python
+    # Instantiate the turn final task
+    bump_obj = final_task(distance, direction, mode)
+    bump_task = cotask.Task(bump_obj.run,
+                                      name="Bump Task",
+                                      priority=4,
+                                      period=10,
+                                      profile=True,
+                                      trace=True)
+    cotask.task_list.append(bump_task)
+```
+
 ## Analysis
 
 Our work with Romi involved both theoretical modeling and experimental validation. We developed kinematic equations to describe Romi’s motion, performed system identification tests to determine key parameters, and implemented a numerical simulation to predict its behavior. This analysis provided a solid foundation for understanding and controlling Romi’s movement.
