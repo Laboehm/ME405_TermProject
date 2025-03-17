@@ -1,14 +1,32 @@
 # README
 This repository contains the code and report for the ME405 course term project at Cal Poly.
+The documentation follows below under the Report section. 
 
-## Driver Files
-blah
+## Code
 
-## Main file
-Blah blah
+###  Driver Files
 
-## Support Images/Videos
-blah blah blah
+This section contains the essential **driver files** required for controlling the various hardware components of the robot. These files handle **low-level hardware interactions**, including sensor readings, motor control, and communication.
+
+Files:
+- `motor.py`
+- `encoder.py`
+- `imu.py`
+- `line_sensor.py`
+- `bump.py`
+- `bluetooth.py`
+
+###  Main file
+
+The `main.py` file serves as the central execution script for the development board that coordinates the driver tasks into a cohesive executable. It initializes tasks, runs the scheduler, and manages high-level decision-making for the Romi robot execution.
+
+---
+
+## Figures
+
+Repository of any figure images, plots or additional calculations that did not fit into the report poriton of this markdown. 
+
+---
 
 # Report
 
@@ -18,8 +36,9 @@ In the following sections, the design, analysis, and results of a programmed Rom
 
 ### Problem statement
 The primary task is to complete the following track in figure 1 using the Romi bot, with the highest speed and reliability possible. Approach for this task is fully up to the interpretation of the team, with the only requirement being the checkpoints. The bot is able to disregard the lines entirely, but for a systematic approach the lines will be needed in order to hit preceding checkpoints. Based on the structure of the track, it is inevitable that there will be hardcoded portions which will cause the program to be a mix of algorithmic and hard coded.\
-![Track](figures/Track.jpg)\
-Figure 1: Romi bot track
+![Track](https://github.com/Laboehm/ME405_TermProject/blob/main/figures/Track.jpg?raw=true)
+
+---
 
 ## Design
 ### Mechanical design
@@ -116,6 +135,8 @@ This module enables remote control, allowing for a more seamless programming and
 ---
 
 These components were chosen to match the specific challenges provided by the track, with the main features being varying lines, blank space, and a wall. The track components challenge the designer to construct the bot and program to handle sharp turns, follow lines, count distances, and detect collisions. Along with the fact that the Romi adjacent components and the STM32 development board were provided by the course as parameters to work within. The external components we had the freedom to use were the IMU, line sensors, and bump sensors. The chassis in particular, hugely simplifies the design by allowing us to ignore any stability issues with its stabilizer balls and light frame. The STM32 Nucleo-L476RG provides a straightforward development board that allows us to actually code the whole project and interface the components. The BNO055 IMU was a recommendation by the professor, and provides a triaxial 14-bit accelerometer, an accurate close-loop triaxial 16-bit gyroscope, a triaxial geomagnetic sensor and a 32-bit microcontroller running the BSX3. All of the parts for the IMU, provide a versatile array of location and orientation recording features for efficient navigation. Romi encoders were already provided and provide a more simple alternative to the navigation of the IMU and provide accurate distance readings. The IR reflectance sensors or line sensors are an essential part of this design, because otherwise we would not be able to detect and follow the line while adjusting for minor deviations. Without the line sensors, we would need to simply hard code the entirety of the algorithm and would require a specific and repeatable starting point. Bump sensors serve as the primary method for detecting collisions and triggering obstacle-avoidance maneuvers to complete the final portion of the course with the wall. The HC-05 Bluetooth module enables wireless debugging and remote monitoring, allowing for real-time performance adjustments without requiring a wire. Together, these components create a robust autonomous system capable of navigating the track efficiently with dynamic controls. The intent with these dynamic controls is to create maximum consistency, while allowing for the bot to theoretically function if placed anywhere on the track. 
+
+---
 
 ### Electrical design
 
