@@ -244,7 +244,7 @@ Our work with Romi involved both theoretical modeling and experimental validatio
 
 ### Calculations
 
-We derived kinematic equations that describe Romi’s motion in a nonlinear state-space form. These equations define the global X, Y, and Ψ (orientation) coordinates of the robot, along with arc length, velocity, and angular velocity. 
+We derived kinematic equations that describe Romi’s motion in a nonlinear state-space form. These equations define the global X, Y, and $\psi$ (orientation) coordinates of the robot, along with arc length, velocity, and angular velocity. 
 
 [View Hand Calculations](figures/hand_calcs.pdf)
 
@@ -275,7 +275,7 @@ To complete the system model, we generated several plots to physically character
   Captures the transient response of the system and was used to verify the time constant.
 
 - **Linearized motor response (logarithmic plot)**  
-  By plotting $'log(1 - \( \omega / \omega_{max} \))'$ against time, we extracted the motor time constant from the slope of the response.
+  By plotting $log(1 - \( \omega / \omega_{max} \))$ against time, we extracted the motor time constant from the slope of the response.
 
 These calculations, models, and plots provided a detailed understanding of Romi’s kinematics and control behavior, ensuring that our approach was both accurate and effective.
 
