@@ -266,16 +266,24 @@ The simulation also included a feedback controller that adjusted for a reference
 To complete the system model, we generated several plots to physically characterize the robot:
 
 - **Steady-state speed vs. % duty cycle**  
-  Shows the linear relationship between PWM input and angular velocity, confirming the system gain.
+  Shows the linear relationship between PWM input and angular velocity, confirming the system gain.  
+
+  ![Steady-state speed vs. % duty cycle](figures/stead_state_vs_dity_cycle.png)
 
 - **Position vs. time for a step input**  
-  Illustrates how Romi’s position evolves over time when subjected to a step change in input.
+  Illustrates how Romi’s position evolves over time when subjected to a step change in input.  
+
+  ![Position vs. time](figures/position_vs_time.png)
 
 - **Velocity vs. time for a step input**  
-  Captures the transient response of the system and was used to verify the time constant.
+  Captures the transient response of the system and was used to verify the time constant.  
+
+  ![Velocity vs. time](figures/speed_vs_time.png)
 
 - **Linearized motor response (logarithmic plot)**  
-  By plotting $log(1 - \( \omega / \omega_{max} \))$ against time, we extracted the motor time constant from the slope of the response.
+  By plotting $log(1 - \(\omega / \omega_{max}\))$ against time, we extracted the motor time constant from the slope of the response.  
+
+  ![Linearized motor response](figures/linearized_motor_response.png)
 
 These calculations, models, and plots provided a detailed understanding of Romi’s kinematics and control behavior, ensuring that our approach was both accurate and effective.
 
